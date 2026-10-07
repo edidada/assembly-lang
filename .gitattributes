@@ -1,0 +1,4 @@
+# Keep the CI harness shell-scriptable on Linux/macOS runners regardless of
+# core.autocrlf on the developer's machine.
+*.sh text eol=lf
+*.yml text eol=lf

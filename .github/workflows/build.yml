@@ -1,0 +1,90 @@
+name: build
+
+# What these samples are: GNU as / AT&T syntax, x86-32 ELF, `int $0x80` Linux
+# syscalls, plus the `gcc -S` listings and the C examples from the book.
+# The matrix therefore covers every OS the code can actually be built on:
+#
+#   Linux    full support: assemble + link + run (32-bit and the 64-bit `gcc -S`
+#            outputs). Needs the i386 multilib compilers.
+#   Windows  i686 GNU as syntax check for all 77 sources. Nothing is linked or
+#            run: `int $0x80` is a Linux syscall and has no meaning on Windows.
+#   macOS    the self-contained C examples only. macOS dropped all 32-bit x86
+#            userspace support (Catalina), and the hosted runners are arm64, so
+#            the .s samples cannot be assembled or executed there at all.
+#
+# See scripts/asm-ci.sh for the per-file grouping and the reasons recorded there.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    name: Linux · ${{ matrix.os }} · x86-32 + x86-64
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install i386 multilib toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-multilib g++-multilib libc6-dev-i386
+
+      - name: Verify 32-bit support is usable
+        run: gcc -m32 -xc -c /dev/null -o /dev/null
+
+      - name: x86-32 (ELF, Linux syscalls) — assemble, link, run
+        run: bash ./scripts/asm-ci.sh linux32
+
+      - name: x86-64 (gcc -S output: for.s, ifthen.s) + portable C examples
+        run: bash ./scripts/asm-ci.sh linux64
+
+  windows:
+    name: Windows · ${{ matrix.os }} · i686 assemble check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up MSYS2 with the i686 binutils assembler
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          update: false
+          install: >-
+            mingw-w64-i686-binutils
+            coreutils
+            sed
+            grep
+
+      - name: i686 COFF syntax check of every .s
+        shell: msys2 {0}
+        run: AS=/mingw32/bin/as.exe bash ./scripts/asm-ci.sh win32-syntax
+
+  macos:
+    name: macOS · ${{ matrix.os }} · C examples
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compile and run the self-contained C examples
+        env:
+          CC: cc
+        run: bash ./scripts/asm-ci.sh macos-c

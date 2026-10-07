@@ -46,7 +46,7 @@ jobs:
       - name: x86-32 (ELF, Linux syscalls) — assemble, link, run
         run: bash ./scripts/asm-ci.sh linux32
 
-      - name: x86-64 (gcc -S output: for.s, ifthen.s) + portable C examples
+      - name: "x86-64 leg (gcc -S output: for.s, ifthen.s) + portable C examples"
         run: bash ./scripts/asm-ci.sh linux64
 
   windows:

@@ -24,7 +24,7 @@
 | 第8章 基本数学功能 | [ch08-integer-instructions.md](ch08-integer-instructions.md) | `addtest1~4.s`、`adctest.s`、`sbbtest.s`、`multest.s`、`imultest.s`、`divtest.s`、`aaatest.s`、`dastest.s`、`swaptest.s`、`cmpxchgtest.s`、`cmpxchg8Btest.s` |
 | 第9章 高级数学功能 | [ch09-floating-point.md](ch09-floating-point.md) | `fpuvals.s`、`premtest.s`、`area.s`、`areafunc.s`、`square.s`、`tempconv.c/.s` |
 | 第10章 处理字符串 | [ch10-string-instructions.md](ch10-string-instructions.md) | `movstest1~3.s`、`cmpstest1~2.s`、`reptest1~2.s`、`convert.s` |
-| 第11章 使用函数 | [ch11-using-functions.md](ch11-using-functions.md) | `functest1~2.s`、`asmfunc.s`+`mainprog.c`、`greater.s`+`multtest.c`、`cfunctest.s`、`paramtest1.s` |
+| 第11章 使用函数 | [ch11-using-functions.md](ch11-using-functions.md) | `functest1~2.s`、`asmfunc.s`+`mainprog.c`、`greater.s`+`multtest.c`、`cfunctest.s`、`paramtest1.s`（`temp.s` 是 `cfunctest.c` 的 `gcc -S` 产物） |
 | 第12章 使用Linux系统调用 | [ch12-linux-syscalls.md](ch12-linux-syscalls.md) | `syscalltest.s`、`nanotest.s`、`cpuid.s`、`paramtest1.s` |
 
 ### 第三部分 高级汇编语言技术
